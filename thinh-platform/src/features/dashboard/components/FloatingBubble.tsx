@@ -16,17 +16,28 @@ interface BubbleData {
 interface FloatingBubbleProps {
   data: BubbleData;
   isDragging: boolean;
-  onMouseDown: () => void;
+  onMouseDown: (e: React.MouseEvent) => void;
+  onClick?: () => void;
 }
 
-export function FloatingBubble({ data, isDragging, onMouseDown }: FloatingBubbleProps) {
+export function FloatingBubble({ data, isDragging, onMouseDown, onClick }: FloatingBubbleProps) {
   const [isHovered, setIsHovered] = useState(false);
+
+  const handleClick = (e: React.MouseEvent) => {
+    // Only trigger click if not dragging
+    if (!isDragging && onClick) {
+      e.preventDefault();
+      onClick();
+    }
+  };
 
   return (
     <div
-      className={`absolute cursor-grab active:cursor-grabbing transition-all duration-300 select-none ${
-        isDragging ? "z-50 scale-110" : "z-20"
-      } ${isHovered ? "scale-105" : ""}`}
+      className={`absolute transition-all duration-300 select-none opacity-90 ${
+        isDragging ? "z-50 scale-110 cursor-grabbing" : "z-20"
+      } ${isHovered ? "scale-105" : ""} ${
+        onClick ? "cursor-pointer" : "cursor-grab"
+      }`}
       style={{
         left: `${data.x}%`,
         top: `${data.y}%`,
@@ -39,6 +50,7 @@ export function FloatingBubble({ data, isDragging, onMouseDown }: FloatingBubble
         msUserSelect: 'none',
       }}
       onMouseDown={onMouseDown}
+      onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -100,6 +112,48 @@ export function FloatingBubble({ data, isDragging, onMouseDown }: FloatingBubble
           msUserSelect: 'none',
         }}
       />
+
+      {/* Special glow for clickable bubbles */}
+      {onClick && (
+        <div
+          className={`absolute inset-0 rounded-full bg-gradient-to-br from-white/20 to-transparent blur-md opacity-0 select-none
+            ${isHovered ? "opacity-100" : ""}
+            transition-all duration-300`}
+          style={{
+            transform: 'translate(-50%, -50%)',
+            width: `${data.size + 30}px`,
+            height: `${data.size + 30}px`,
+          }}
+        />
+      )}
+
+      {/* Special indicator for movies bubble */}
+      {onClick && data.id === 'movies' && (
+        <div
+          className="absolute inset-0 rounded-full border-2 border-blue-400/50 animate-pulse select-none"
+          style={{
+            transform: 'translate(-50%, -50%)',
+            width: `${data.size + 15}px`,
+            height: `${data.size + 15}px`,
+          }}
+        />
+      )}
+
+      {/* Tooltip for clickable bubbles */}
+      {onClick && isHovered && (
+        <div
+          className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-1 bg-black/80 text-white text-xs rounded-lg whitespace-nowrap select-none z-50"
+          style={{
+            userSelect: 'none',
+            WebkitUserSelect: 'none',
+            MozUserSelect: 'none',
+            msUserSelect: 'none',
+          }}
+        >
+          Click to explore {data.title}
+          <div className="absolute top-full left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-black/80"></div>
+        </div>
+      )}
     </div>
   );
 }

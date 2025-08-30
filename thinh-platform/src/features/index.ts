@@ -2,6 +2,7 @@
 export * from "./authentication";
 export * from "./dashboard";
 export * from "./layout";
+export * from "./movies";
 
 // Default exports
 export { default as Layout } from "./layout";

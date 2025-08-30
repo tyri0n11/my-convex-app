@@ -1,5 +1,13 @@
 import React, { useState } from 'react';
-import LoadingScreen, { Spinner, DotsLoader, BarsLoader, PulseLoader } from './index';
+import LoadingScreen, { 
+  Spinner, 
+  DotsLoader, 
+  BarsLoader, 
+  PulseLoader,
+  Skeleton,
+  CardSkeleton,
+  TableSkeleton
+} from './index';
 
 const LoadingDemo: React.FC = () => {
   const [showFullScreen, setShowFullScreen] = useState(false);
@@ -26,7 +34,7 @@ const LoadingDemo: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gray-100 dark:bg-gray-900 p-8">
-      <div className="max-w-4xl mx-auto">
+      <div className="max-w-6xl mx-auto">
         <h1 className="text-3xl font-bold text-gray-800 dark:text-white mb-8 text-center">
           Loading Screen Component Demo
         </h1>
@@ -86,7 +94,7 @@ const LoadingDemo: React.FC = () => {
         </div>
 
         {/* Individual Components Demo */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="bg-white dark:bg-gray-800 rounded-lg p-6 shadow-lg text-center">
             <h3 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Spinner</h3>
             <div className="flex justify-center">
@@ -116,8 +124,57 @@ const LoadingDemo: React.FC = () => {
           </div>
         </div>
 
+        {/* Inline Loading Examples */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-8 shadow-lg">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Inline Loading Examples</h2>
+          
+          <div className="space-y-6">
+            <div className="flex items-center space-x-4">
+              <Spinner size="sm" />
+              <span className="text-gray-700 dark:text-gray-300">Loading user data...</span>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <DotsLoader size="md" />
+              <span className="text-gray-700 dark:text-gray-300">Processing request...</span>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <BarsLoader size="lg" />
+              <span className="text-gray-700 dark:text-gray-300">Saving changes...</span>
+            </div>
+            
+            <div className="flex items-center space-x-4">
+              <PulseLoader size="md" />
+              <span className="text-gray-700 dark:text-gray-300">Connecting to server...</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Skeleton Loading Examples */}
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-8 shadow-lg">
+          <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Skeleton Loading Examples</h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div>
+              <h4 className="font-medium text-gray-800 dark:text-white mb-3">Text Skeleton</h4>
+              <Skeleton lines={3} />
+            </div>
+            
+            <div>
+              <h4 className="font-medium text-gray-800 dark:text-white mb-3">Card Skeleton</h4>
+              <CardSkeleton showImage={true} lines={2} />
+            </div>
+            
+            <div>
+              <h4 className="font-medium text-gray-800 dark:text-white mb-3">Table Skeleton</h4>
+              <TableSkeleton rows={3} columns={3} />
+            </div>
+          </div>
+        </div>
+
         {/* Usage Examples */}
-        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mt-8 shadow-lg">
+        <div className="bg-white dark:bg-gray-800 rounded-lg p-6 mb-8 shadow-lg">
           <h2 className="text-xl font-semibold mb-4 text-gray-800 dark:text-white">Usage Examples</h2>
           
           <div className="space-y-4">
@@ -142,6 +199,25 @@ const LoadingDemo: React.FC = () => {
 <DotsLoader message="Processing..." />
 <BarsLoader size="sm" />
 <PulseLoader />`}
+              </code>
+            </div>
+
+            <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md">
+              <h4 className="font-medium text-gray-800 dark:text-white mb-2">Skeleton Loading</h4>
+              <code className="text-sm text-gray-600 dark:text-gray-300">
+                {`<Skeleton lines={3} height="h-4" />
+<CardSkeleton showImage={true} lines={2} />
+<TableSkeleton rows={5} columns={4} />`}
+              </code>
+            </div>
+
+            <div className="bg-gray-50 dark:bg-gray-700 p-4 rounded-md">
+              <h4 className="font-medium text-gray-800 dark:text-white mb-2">Inline Loading</h4>
+              <code className="text-sm text-gray-600 dark:text-gray-300">
+                {`<div className="flex items-center space-x-2">
+  <Spinner size="sm" />
+  <span>Loading...</span>
+</div>`}
               </code>
             </div>
           </div>

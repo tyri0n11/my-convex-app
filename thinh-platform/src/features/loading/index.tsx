@@ -7,6 +7,8 @@ interface LoadingScreenProps {
   showProgress?: boolean;
   progress?: number;
   onComplete?: () => void;
+  fullScreen?: boolean;
+  className?: string;
 }
 
 const LoadingScreen: React.FC<LoadingScreenProps> = ({
@@ -15,7 +17,9 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
   size = 'md',
   showProgress = false,
   progress = 0,
-  onComplete
+  onComplete,
+  fullScreen = true,
+  className = ''
 }) => {
   const [currentProgress, setCurrentProgress] = useState(0);
   const [isVisible, setIsVisible] = useState(true);
@@ -39,11 +43,15 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
   };
 
   const renderSpinner = () => (
-    <div className={`${sizeClasses[size]} border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin`} />
+    <div 
+      className={`${sizeClasses[size]} border-4 border-gray-200 border-t-blue-500 rounded-full animate-spin`}
+      role="status"
+      aria-label="Loading"
+    />
   );
 
   const renderDots = () => (
-    <div className="flex space-x-2">
+    <div className="flex space-x-2" role="status" aria-label="Loading">
       {[0, 1, 2].map((i) => (
         <div
           key={i}
@@ -55,7 +63,7 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
   );
 
   const renderBars = () => (
-    <div className="flex space-x-1">
+    <div className="flex space-x-1" role="status" aria-label="Loading">
       {[0, 1, 2, 3, 4].map((i) => (
         <div
           key={i}
@@ -67,7 +75,11 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
   );
 
   const renderPulse = () => (
-    <div className={`${sizeClasses[size]} bg-blue-500 rounded-full animate-ping`} />
+    <div 
+      className={`${sizeClasses[size]} bg-blue-500 rounded-full animate-ping`}
+      role="status"
+      aria-label="Loading"
+    />
   );
 
   const renderLoader = () => {
@@ -82,6 +94,15 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
         return renderSpinner();
     }
   };
+
+  // If not full screen, just render the loader
+  if (!fullScreen) {
+    return (
+      <div className={`flex items-center justify-center ${className}`}>
+        {renderLoader()}
+      </div>
+    );
+  }
 
   if (!isVisible) return null;
 
@@ -142,20 +163,78 @@ const LoadingScreen: React.FC<LoadingScreenProps> = ({
 };
 
 // Export individual loading components for specific use cases
-export const Spinner: React.FC<Omit<LoadingScreenProps, 'variant'>> = (props) => (
-  <LoadingScreen {...props} variant="spinner" />
+export const Spinner: React.FC<Omit<LoadingScreenProps, 'variant' | 'fullScreen'>> = (props) => (
+  <LoadingScreen {...props} variant="spinner" fullScreen={false} />
 );
 
-export const DotsLoader: React.FC<Omit<LoadingScreenProps, 'variant'>> = (props) => (
-  <LoadingScreen {...props} variant="dots" />
+export const DotsLoader: React.FC<Omit<LoadingScreenProps, 'variant' | 'fullScreen'>> = (props) => (
+  <LoadingScreen {...props} variant="dots" fullScreen={false} />
 );
 
-export const BarsLoader: React.FC<Omit<LoadingScreenProps, 'variant'>> = (props) => (
-  <LoadingScreen {...props} variant="bars" />
+export const BarsLoader: React.FC<Omit<LoadingScreenProps, 'variant' | 'fullScreen'>> = (props) => (
+  <LoadingScreen {...props} variant="bars" fullScreen={false} />
 );
 
-export const PulseLoader: React.FC<Omit<LoadingScreenProps, 'variant'>> = (props) => (
-  <LoadingScreen {...props} variant="pulse" />
+export const PulseLoader: React.FC<Omit<LoadingScreenProps, 'variant' | 'fullScreen'>> = (props) => (
+  <LoadingScreen {...props} variant="pulse" fullScreen={false} />
+);
+
+// Skeleton loading component for content placeholders
+export const Skeleton: React.FC<{
+  className?: string;
+  lines?: number;
+  height?: string;
+}> = ({ className = '', lines = 1, height = 'h-4' }) => (
+  <div className={`animate-pulse ${className}`}>
+    {Array.from({ length: lines }).map((_, i) => (
+      <div
+        key={i}
+        className={`${height} bg-gray-200 dark:bg-gray-700 rounded mb-2 ${
+          i === lines - 1 ? 'w-3/4' : 'w-full'
+        }`}
+      />
+    ))}
+  </div>
+);
+
+// Card skeleton for loading cards
+export const CardSkeleton: React.FC<{
+  className?: string;
+  showImage?: boolean;
+  lines?: number;
+}> = ({ className = '', showImage = true, lines = 3 }) => (
+  <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 ${className}`}>
+    {showImage && (
+      <div className="w-full h-32 bg-gray-200 dark:bg-gray-700 rounded-md mb-4 animate-pulse" />
+    )}
+    <Skeleton lines={lines} />
+  </div>
+);
+
+// Table skeleton for loading tables
+export const TableSkeleton: React.FC<{
+  rows?: number;
+  columns?: number;
+  className?: string;
+}> = ({ rows = 5, columns = 4, className = '' }) => (
+  <div className={`bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden ${className}`}>
+    <div className="px-6 py-4 border-b border-gray-200 dark:border-gray-700">
+      <Skeleton lines={1} height="h-6" />
+    </div>
+    <div className="divide-y divide-gray-200 dark:divide-gray-700">
+      {Array.from({ length: rows }).map((_, i) => (
+        <div key={i} className="px-6 py-4">
+          <div className="flex space-x-4">
+            {Array.from({ length: columns }).map((_, j) => (
+              <div key={j} className="flex-1">
+                <Skeleton lines={1} height="h-4" />
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
 );
 
 export default LoadingScreen;

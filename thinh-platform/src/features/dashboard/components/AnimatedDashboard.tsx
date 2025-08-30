@@ -14,7 +14,11 @@ interface BubbleData {
   size: number;
 }
 
-export function AnimatedDashboard() {
+interface AnimatedDashboardProps {
+  onBubbleClick?: (bubbleId: string) => void;
+}
+
+export function AnimatedDashboard({ onBubbleClick }: AnimatedDashboardProps) {
   const [bubbles, setBubbles] = useState<BubbleData[]>([
     {
       id: "movies",
@@ -60,6 +64,7 @@ export function AnimatedDashboard() {
 
   const [draggedBubble, setDraggedBubble] = useState<string | null>(null);
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
+  const [dragStartPos, setDragStartPos] = useState({ x: 0, y: 0 });
   const [time, setTime] = useState(0);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -149,56 +154,97 @@ export function AnimatedDashboard() {
     return () => clearInterval(interval);
   }, [draggedBubble, time]);
 
-  // Mouse handlers for dragging
+  // Enhanced mouse handlers for smooth dragging
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
       if (!containerRef.current || !draggedBubble) return;
 
       const rect = containerRef.current.getBoundingClientRect();
-      const x = ((e.clientX - rect.left) / rect.width) * 100;
-      const y = ((e.clientY - rect.top) / rect.height) * 100;
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      
+      // Calculate percentage position
+      const x = (mouseX / rect.width) * 100;
+      const y = (mouseY / rect.height) * 100;
+
+      // Smooth interpolation with easing
+      const easing = 0.4; // Adjust for smoother movement (0.1 = very smooth, 1.0 = instant)
+      const currentBubble = bubbles.find(b => b.id === draggedBubble);
+      if (currentBubble) {
+        const interpolatedX = currentBubble.x + (x - currentBubble.x) * easing;
+        const interpolatedY = currentBubble.y + (y - currentBubble.y) * easing;
+
+        setBubbles((prev) =>
+          prev.map((bubble) =>
+            bubble.id === draggedBubble
+              ? { 
+                  ...bubble, 
+                  x: Math.max(5, Math.min(95, interpolatedX)), 
+                  y: Math.max(5, Math.min(95, interpolatedY)) 
+                }
+              : bubble
+          )
+        );
+      }
 
       setMousePos({ x, y });
-      setBubbles((prev) =>
-        prev.map((bubble) =>
-          bubble.id === draggedBubble
-            ? { ...bubble, x: Math.max(5, Math.min(95, x)), y: Math.max(5, Math.min(95, y)) }
-            : bubble
-        )
-      );
     };
 
     if (draggedBubble) {
       document.addEventListener("mousemove", handleMouseMove);
       return () => document.removeEventListener("mousemove", handleMouseMove);
     }
-  }, [draggedBubble]);
+  }, [draggedBubble, bubbles]);
 
   useEffect(() => {
     const handleMouseUp = () => {
       if (draggedBubble) {
-        setDraggedBubble(null);
+        // Calculate throw velocity based on drag distance
+        const dragDistance = Math.sqrt(
+          Math.pow(mousePos.x - dragStartPos.x, 2) + 
+          Math.pow(mousePos.y - dragStartPos.y, 2)
+        );
+        
+        // Apply throw physics with momentum
+        const throwVelocity = Math.min(dragDistance * 0.02, 1.8); // Cap maximum velocity
+        
         setBubbles((prev) =>
           prev.map((bubble) =>
             bubble.id === draggedBubble
               ? {
                   ...bubble,
                   velocity: {
-                    x: (mousePos.x - bubble.x) * 0.15,
-                    y: (mousePos.y - bubble.y) * 0.15,
+                    x: (mousePos.x - dragStartPos.x) * throwVelocity,
+                    y: (mousePos.y - dragStartPos.y) * throwVelocity,
                   },
                 }
               : bubble
           )
         );
+        
+        setDraggedBubble(null);
       }
     };
 
     document.addEventListener("mouseup", handleMouseUp);
     return () => document.removeEventListener("mouseup", handleMouseUp);
-  }, [draggedBubble, mousePos]);
+  }, [draggedBubble, mousePos, dragStartPos]);
 
-  const handleBubbleMouseDown = (bubbleId: string) => {
+  const handleBubbleMouseDown = (bubbleId: string, e: React.MouseEvent) => {
+    e.preventDefault();
+    
+    // Record drag start position
+    const rect = containerRef.current?.getBoundingClientRect();
+    if (rect) {
+      const mouseX = e.clientX - rect.left;
+      const mouseY = e.clientY - rect.top;
+      const mouseXPercent = (mouseX / rect.width) * 100;
+      const mouseYPercent = (mouseY / rect.height) * 100;
+      
+      setDragStartPos({ x: mouseXPercent, y: mouseYPercent });
+      setMousePos({ x: mouseXPercent, y: mouseYPercent });
+    }
+    
     setDraggedBubble(bubbleId);
   };
 
@@ -245,8 +291,13 @@ export function AnimatedDashboard() {
             transform: `scale(${titleScale})`,
           }}
         >
-          Thinh-Platform
+          All In One Platform
         </h1>
+        {onBubbleClick && (
+          <p className="text-white/70 text-center mt-4 text-lg drop-shadow-lg">
+            Click on the bubbles to explore different features
+          </p>
+        )}
       </div>
 
       {bubbles.map((bubble) => (
@@ -254,7 +305,8 @@ export function AnimatedDashboard() {
           key={bubble.id}
           data={bubble}
           isDragging={draggedBubble === bubble.id}
-          onMouseDown={() => handleBubbleMouseDown(bubble.id)}
+          onMouseDown={(e) => handleBubbleMouseDown(bubble.id, e)}
+          onClick={() => onBubbleClick?.(bubble.id)}
         />
       ))}
 

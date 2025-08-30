@@ -5,15 +5,12 @@ import { authStyles } from "../styles";
 
 export function SignUpForm() {
   const { 
-    flow, 
-    error, 
     showPassword, 
     showConfirmPassword,
     handleSignUp, 
     toggleFlow, 
     togglePasswordVisibility,
     toggleConfirmPasswordVisibility,
-    handleRememberMeChange
   } = useAuthentication();
 
   return (
@@ -203,13 +200,6 @@ export function SignUpForm() {
             </button>
           </div>
 
-          {error && (
-            <div className="mt-4 bg-red-50 border border-red-200 rounded-md p-3">
-              <p className="text-sm text-red-600">
-                {error}
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>
