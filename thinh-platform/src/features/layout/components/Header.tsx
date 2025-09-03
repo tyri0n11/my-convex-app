@@ -1,8 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { NavLink } from "react-router-dom";
 import { SignOutButton } from "../../authentication";
-import { layoutStyles } from "../styles";
 import "./Header.css";
 
 export function Header() {
@@ -82,18 +82,33 @@ export function Header() {
 
           {/* Desktop Navigation Section */}
           <nav className="hidden md:flex items-center space-x-8">
-            <a href="#" className="header-nav-item text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-out font-medium group">
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) => `header-nav-item transition-all duration-300 ease-out font-medium group ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400'}`}
+            >
               <span className="relative">
                 Dashboard
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 group-hover:w-full"></span>
               </span>
-            </a>
-            <a href="#" className="header-nav-item text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-out font-medium group">
+            </NavLink>
+            <NavLink
+              to="/movies"
+              className={({ isActive }) => `header-nav-item transition-all duration-300 ease-out font-medium group ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400'}`}
+            >
               <span className="relative">
-                Projects
+                Movies
                 <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 group-hover:w-full"></span>
               </span>
-            </a>
+            </NavLink>
+            <NavLink
+              to="/notes"
+              className={({ isActive }) => `header-nav-item transition-all duration-300 ease-out font-medium group ${isActive ? 'text-blue-600 dark:text-blue-400' : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400'}`}
+            >
+              <span className="relative">
+                Notes
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-gradient-to-r from-blue-500 to-purple-500 transition-all duration-300 group-hover:w-full"></span>
+              </span>
+            </NavLink>
             <a href="#" className="header-nav-item text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 transition-all duration-300 ease-out font-medium group">
               <span className="relative">
                 Analytics
@@ -169,12 +184,27 @@ export function Header() {
           ${isMobileMenuOpen ? 'max-h-64 opacity-100' : 'max-h-0 opacity-0'}
         `}>
           <nav className="py-4 space-y-2 border-t border-slate-200 dark:border-slate-700">
-            <a href="#" className="block px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-all duration-300 ease-out font-medium hover:translate-x-2">
+            <NavLink
+              to="/dashboard"
+              className={({ isActive }) => `block px-4 py-2 rounded-md transition-all duration-300 ease-out font-medium hover:translate-x-2 ${isActive ? 'text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-800' : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
               Dashboard
-            </a>
-            <a href="#" className="block px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-all duration-300 ease-out font-medium hover:translate-x-2">
-              Projects
-            </a>
+            </NavLink>
+            <NavLink
+              to="/movies"
+              className={({ isActive }) => `block px-4 py-2 rounded-md transition-all duration-300 ease-out font-medium hover:translate-x-2 ${isActive ? 'text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-800' : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Movies
+            </NavLink>
+            <NavLink
+              to="/notes"
+              className={({ isActive }) => `block px-4 py-2 rounded-md transition-all duration-300 ease-out font-medium hover:translate-x-2 ${isActive ? 'text-blue-600 dark:text-blue-400 bg-slate-100 dark:bg-slate-800' : 'text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800'}`}
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              Notes
+            </NavLink>
             <a href="#" className="block px-4 py-2 text-slate-700 dark:text-slate-300 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-md transition-all duration-300 ease-out font-medium hover:translate-x-2">
               Analytics
             </a>

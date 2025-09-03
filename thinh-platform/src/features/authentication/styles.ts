@@ -1,7 +1,7 @@
 export const authStyles = {
   // Layout
   container: "min-h-screen flex",
-  leftSection: "flex-1 bg-blue-600 flex flex-col justify-center px-12 text-white",
+  leftSection: "hidden md:flex flex-1 bg-blue-600 flex-col justify-center px-12 text-white",
   rightSection: "flex-1 bg-white flex flex-col justify-center px-12",
   
   // Logo
